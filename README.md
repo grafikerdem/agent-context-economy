@@ -12,8 +12,19 @@
 **Agent Context Economy (ACE)** is a lightweight, drop-in PowerShell workflow toolkit designed specifically for AI coding agents (Cursor, Windsurf, Claude Code, GitHub Copilot Workspace, Antigravity). It forces agents to operate like senior developers: **investigate efficiently, read selectively, and act precisely.**
 
 ---
+---
 
-## 📉 The Context Bleeding Problem
+### 🚀 Quick Links
+* [The Context Bleeding Problem](#the-context-bleeding-problem)
+* [ACE Solution & Benchmarks](#the-ace-solution)
+* [Included Toolkit](#included-toolkit--superpowers)
+* [Quick Start](#quick-start-30-seconds)
+* [Agent Instructions](#core-agent-instructions)
+* [Philosophy](#the-philosophy)
+
+---
+
+## The Context Bleeding Problem
 
 When AI agents navigate large repositories, they frequently burn through your context window (and your API wallet) by:
 * 🛑 **Dumping 500+ lines** of raw Webpack/Vite/PHPUnit build logs just to see if a test failed.
@@ -21,7 +32,7 @@ When AI agents navigate large repositories, they frequently burn through your co
 * 🛑 **Spamming recursive regex searches** that return hundreds of irrelevant matches.
 * 🛑 **Triggering endless approval loops** for tiny, sequential shell commands.
 
-### ✨ The ACE Solution
+### The ACE Solution
 
 ACE acts as a smart abstraction layer between the agent and your repository, cutting context usage drastically:
 
@@ -35,7 +46,7 @@ ACE acts as a smart abstraction layer between the agent and your repository, cut
 
 ---
 
-## 🛠️ Included Toolkit & Superpowers
+## Included Toolkit & Superpowers
 
 | Script | Command | Agent Superpower |
 | :--- | :--- | :--- |
@@ -48,7 +59,7 @@ ACE acts as a smart abstraction layer between the agent and your repository, cut
 
 ---
 
-## ⚡ Quick Start (30 Seconds)
+## Quick Start (30 Seconds)
 
 1️⃣ **Clone & Install** inside your project repository:
 ```powershell
@@ -64,7 +75,7 @@ powershell -ExecutionPolicy Bypass -File scripts/powershell/setup-ai-scripts.ps1
 3️⃣ Activate Agent Rules:
 Copy the specialized prompts from examples/AGENTS.example.md into your project's .cursorrules, developer_instructions.md, or AGENTS.md file. This is where the magic happens—it teaches the agent to use these tools automatically!
 
-## 🤖 Core Agent Instructions
+## Core Agent Instructions
 
 To get the most out of ACE, add these instructions to your `.cursorrules` or `AGENTS.md`:
 
@@ -91,7 +102,7 @@ Instead of reading a whole 800-line TypeScript controller:
 ```powershell
 .\scripts\powershell\read-symbol.ps1 -Path resources/js/Pages/Checks/Create.tsx -Symbol "handleSubmit" -Context 30
 ````
-🧠 The Philosophy
+## The Philosophy
 The goal is not to blind the agent. The goal is to make it read code like a careful developer:
 
 Summarize first.
