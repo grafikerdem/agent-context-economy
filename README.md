@@ -105,25 +105,25 @@ This toolkit gives agents safer helper commands and an example `AGENTS.md` polic
 Copy the scripts into your repository, for example:
 
 ```text
-scripts/ai/*.ps1
+scripts/powershell/*.ps1
 ```
 
 Then unblock them once on Windows:
 
 ```powershell
-Get-ChildItem .\scripts\ai\*.ps1 | Unblock-File
+Get-ChildItem .\scripts\powershell\*.ps1 | Unblock-File
 ```
 
 Or run:
 
 ```powershell
-.\scripts\ai\setup-ai-scripts.ps1
+.\scripts\powershell\setup-ai-scripts.ps1
 ```
 
 Then run the smoke test:
 
 ```powershell
-.\scripts\ai\smoke-test.ps1
+.\scripts\powershell\smoke-test.ps1
 ```
 
 ## Recommended usage
@@ -131,21 +131,21 @@ Then run the smoke test:
 ### Noisy command
 
 ```powershell
-.\scripts\ai\run-compact.ps1 -Command "npm run build"
-.\scripts\ai\run-compact.ps1 -Command "npx tsc --noEmit"
-.\scripts\ai\run-compact.ps1 -Command "php artisan test" -MaxLines 250
+.\scripts\powershell\run-compact.ps1 -Command "npm run build"
+.\scripts\powershell\run-compact.ps1 -Command "npx tsc --noEmit"
+.\scripts\powershell\run-compact.ps1 -Command "php artisan test" -MaxLines 250
 ```
 
 ### Targeted tests
 
 ```powershell
-.\scripts\ai\test.ps1 -Filter SomeFeatureTest
+.\scripts\powershell\test.ps1 -Filter SomeFeatureTest
 ```
 
 ### Search unknown domain
 
 ```powershell
-.\scripts\ai\investigate.ps1 `
+.\scripts\powershell\investigate.ps1 `
   -Patterns "ExchangeRate","exchange_rates","exchange-rates" `
   -Paths "app","routes","resources/js","database","tests"
 ```
@@ -153,9 +153,9 @@ Then run the smoke test:
 ### Known file
 
 ```powershell
-.\scripts\ai\find-in-file.ps1 -Path resources/js/Pages/Checks/Create.tsx -Pattern "onValueChange"
-.\scripts\ai\read-symbol.ps1 -Path resources/js/Pages/Checks/Create.tsx -Symbol "handleSubmit" -Context 30
-.\scripts\ai\read-window.ps1 -Path resources/js/Pages/Checks/Create.tsx -Line 120 -Context 30
+.\scripts\powershell\find-in-file.ps1 -Path resources/js/Pages/Checks/Create.tsx -Pattern "onValueChange"
+.\scripts\powershell\read-symbol.ps1 -Path resources/js/Pages/Checks/Create.tsx -Symbol "handleSubmit" -Context 30
+.\scripts\powershell\read-window.ps1 -Path resources/js/Pages/Checks/Create.tsx -Line 120 -Context 30
 ```
 
 ## Add the agent rules
