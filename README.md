@@ -1,5 +1,70 @@
 # Agent Context Economy
 
+> A lightweight workflow toolkit for AI coding agents.
+>
+> Reduce unnecessary terminal output, source-code reading, and shell command overhead when working with large repositories.
+
+---
+
+## Why?
+
+Large language models often waste context on repository navigation rather than solving the task itself.
+
+Common examples:
+
+- reading entire files to inspect one function
+- dumping noisy build output
+- repeating the same searches
+- approval-heavy shell command chains
+
+Agent Context Economy provides a lightweight workflow layer that helps reduce this overhead.
+
+---
+
+## Features
+
+✅ Terminal Output Economy
+
+- Compact noisy build output
+- Compact PHPUnit output
+- Compact TypeScript output
+
+---
+
+✅ Source Reading Economy
+
+- Read symbol instead of file
+- Read small windows
+- File outline
+- Investigation workflow
+
+---
+
+✅ Workflow Economy
+
+- Investigation batching
+- Diff summary
+- UTF-8 safe readers
+- Smoke tests
+- Command budgeting
+
+---
+
+## Benchmark
+
+(sonra senin benchmark gelsin)
+
+---
+
+## Installation
+
+```powershell
+git clone https://github.com/grafikerdem/agent-context-economy.git
+powershell -ExecutionPolicy Bypass -File scripts/powershell/setup-ai-scripts.ps1
+```
+
+# Agent Context Economy
+
 A small PowerShell toolkit for reducing terminal noise, source-code dumping, repeated search chains, and approval fatigue when working with AI coding agents on large repositories.
 
 It is designed for tools such as Codex, Antigravity, Cursor, Claude Code, Windsurf, and other agentic coding assistants that run shell commands and read repository files.
