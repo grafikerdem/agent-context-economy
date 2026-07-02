@@ -52,7 +52,7 @@ Agent Context Economy provides a lightweight workflow layer that helps reduce th
 
 ## Benchmark
 
-(sonra senin benchmark gelsin)
+[![Benchmark Grafiği](docs/benchmark.svg)](docs/benchmark.svg)
 
 ---
 
