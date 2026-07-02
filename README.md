@@ -91,7 +91,7 @@ Always prefer ACE scripts over raw commands:
 1. Running Noisy Tests Without Token Dumps
 Instead of flooding the chat with a massive test log, the agent runs this:
 
-```powershell
+powershell
 .\scripts\powershell\run-compact.ps1 -Command "php artisan test" -MaxLines 250
 ````
 Result: The agent only sees the final failure summary and stack traces.
