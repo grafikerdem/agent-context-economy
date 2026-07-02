@@ -64,6 +64,18 @@ powershell -ExecutionPolicy Bypass -File scripts/powershell/setup-ai-scripts.ps1
 3️⃣ Activate Agent Rules:
 Copy the specialized prompts from examples/AGENTS.example.md into your project's .cursorrules, developer_instructions.md, or AGENTS.md file. This is where the magic happens—it teaches the agent to use these tools automatically!
 
+## 🤖 Core Agent Instructions
+
+To get the most out of ACE, add these instructions to your `.cursorrules` or `AGENTS.md`:
+
+```markdown
+You have access to the Agent Context Economy (ACE) toolkit. 
+Always prefer ACE scripts over raw commands:
+1. Use `run-compact.ps1` for build/test output.
+2. Use `read-symbol.ps1` or `read-window.ps1` for code inspection.
+3. Use `investigate.ps1` to batch multiple search patterns.
+4. If a file is long, never read the whole file; use `read-window.ps1`.
+
 📖 Real-World Examples
 1. Running Noisy Tests Without Token Dumps
 Instead of flooding the chat with a massive test log, the agent runs this:
