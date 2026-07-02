@@ -1,0 +1,47 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="620" height="384" viewBox="0 0 620 384">
+<defs>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  </style>
+  <linearGradient id="grad0" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#3fb950" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#3fb950"/>
+  </linearGradient>
+  <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#58a6ff" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#58a6ff"/>
+  </linearGradient>
+  <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#d2a8ff" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#d2a8ff"/>
+  </linearGradient>
+</defs>
+<rect width="620" height="384" rx="16" fill="#0d1117"/>
+<rect x="1" y="1" width="618" height="382" rx="16" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+<text x="32" y="40" fill="#f0f6fc" font-size="18" font-weight="700">Agent Context Economy</text>
+<text x="32" y="62" fill="#8b949e" font-size="13" font-weight="400">Typical Workflow Reduction</text>
+<text x="32" y="80" fill="#8b949e" font-size="11" font-weight="400">Synthetic benchmark &#xB7; lower is better</text>
+<line x1="32" y1="96" x2="588" y2="96" stroke="#30363d" stroke-width="1"/>
+<text x="32" y="138" fill="#c9d1d9" font-size="13" font-weight="600">Terminal Output</text>
+<text x="32" y="171" fill="#8b949e" font-size="11" font-weight="400">354 lines &#x2192; 25 lines</text>
+<rect x="200" y="146" width="338" height="22" rx="6" fill="#21262d"/>
+<rect x="200" y="146" width="314" height="22" rx="6" fill="#3fb95033"/>
+<rect x="200" y="146" width="314" height="22" rx="6" fill="url(#grad0)"/>
+<text x="524" y="162" fill="#3fb950" font-size="14" font-weight="700">93%</text>
+<text x="32" y="210" fill="#c9d1d9" font-size="13" font-weight="600">Source Reading</text>
+<text x="32" y="243" fill="#8b949e" font-size="11" font-weight="400">509 lines &#x2192; 51 lines</text>
+<rect x="200" y="218" width="338" height="22" rx="6" fill="#21262d"/>
+<rect x="200" y="218" width="304" height="22" rx="6" fill="#58a6ff33"/>
+<rect x="200" y="218" width="304" height="22" rx="6" fill="url(#grad1)"/>
+<text x="514" y="234" fill="#58a6ff" font-size="14" font-weight="700">90%</text>
+<text x="32" y="282" fill="#c9d1d9" font-size="13" font-weight="600">Shell Commands</text>
+<text x="32" y="315" fill="#8b949e" font-size="11" font-weight="400">7 commands &#x2192; 2 commands</text>
+<rect x="200" y="290" width="338" height="22" rx="6" fill="#21262d"/>
+<rect x="200" y="290" width="240" height="22" rx="6" fill="#d2a8ff33"/>
+<rect x="200" y="290" width="240" height="22" rx="6" fill="url(#grad2)"/>
+<text x="450" y="306" fill="#d2a8ff" font-size="14" font-weight="700">71%</text>
+<line x1="32" y1="332" x2="588" y2="332" stroke="#30363d" stroke-width="1"/>
+<text x="32" y="354" fill="#8b949e" font-size="10" font-weight="400">Reproducible synthetic benchmark. Run scripts/ai/benchmark.ps1 to verify.</text>
+<text x="32" y="370" fill="#8b949e" font-size="10" font-weight="400">Results vary by repository size and agent behavior.</text>
+</svg>
