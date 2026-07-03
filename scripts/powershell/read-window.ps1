@@ -13,6 +13,21 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
 
 function Fail($Message) { Write-Host "ERROR: $Message" -ForegroundColor Red; exit 1 }
+
+function Get-ProvenanceContext {
+    $context = @{ Repo = "unknown"; Git = "unknown@unknown" }
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        $repo = & git rev-parse --show-toplevel 2>$null
+        if ($LASTEXITCODE -eq 0 -and $repo) { $context.Repo = ($repo | Select-Object -First 1) }
+        $branch = & git branch --show-current 2>$null
+        $head = & git rev-parse --short HEAD 2>$null
+        if ($LASTEXITCODE -eq 0 -and $head) {
+            if (-not $branch) { $branch = "detached" }
+            $context.Git = "$branch@$head"
+        }
+    }
+    return $context
+}
 if (-not (Test-Path -LiteralPath $Path)) { Fail "File not found: $Path" }
 if ($Line -lt 1) { Fail "Line must be >= 1." }
 if ($Context -lt 1) { Fail "Context must be >= 1." }
@@ -82,3 +97,19 @@ Write-Host "Read only this window first."
 Write-Host "If context is insufficient, state what is missing and read the next smallest related symbol/window."
 Write-Host "Do not dump the whole file unless explicitly approved."
 Write-Host "If this is the third window in the same known large file, stop and use find-in-file/read-symbol or summarize what is missing."
+
+$windowLines = $end - $start + 1
+$shownAnchors = [Math]::Min($anchors.Count, 20)
+$provenance = Get-ProvenanceContext
+Write-Host ""
+Write-Host "=== PROVENANCE ==="
+Write-Host "Repo: $($provenance.Repo)"
+Write-Host "Git: $($provenance.Git)"
+Write-Host "Tool: read-window.ps1"
+Write-Host "Scope: path=$Path; target=$Line; context=$Context"
+Write-Host "Excluded: source lines outside $start-$end"
+Write-Host "Considered: $total total lines; anchor range $anchorStart-$anchorEnd"
+Write-Host "Returned: $windowLines source lines; $shownAnchors nearby anchors"
+Write-Host "Reduction: $total -> $windowLines source lines; compacted=$((($windowLines -lt $total)).ToString().ToLower())"
+Write-Host "Selection: local window around target line; nearby anchors included"
+Write-Host "Next: use read-symbol if boundaries matter; expand only if context is insufficient"

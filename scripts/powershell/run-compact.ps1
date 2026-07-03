@@ -32,6 +32,21 @@ function Get-WindowedLines {
     }
 }
 
+function Get-ProvenanceContext {
+    $context = @{ Repo = "unknown"; Git = "unknown@unknown" }
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        $repo = & git rev-parse --show-toplevel 2>$null
+        if ($LASTEXITCODE -eq 0 -and $repo) { $context.Repo = ($repo | Select-Object -First 1) }
+        $branch = & git branch --show-current 2>$null
+        $head = & git rev-parse --short HEAD 2>$null
+        if ($LASTEXITCODE -eq 0 -and $head) {
+            if (-not $branch) { $branch = "detached" }
+            $context.Git = "$branch@$head"
+        }
+    }
+    return $context
+}
+
 Write-Host ""
 Write-Host "=== COMMAND ==="
 Write-Host $Command
@@ -167,5 +182,28 @@ if ($exitCode -eq 0) {
         Write-Host "Rerun with higher -MaxLines or inspect the exact failing output."
     }
 }
+
+$wasReduced = ($filtered.Count -gt $MaxLines -or $total -gt $shown)
+$selection = if ($matchIndexes.Count -gt 0) {
+    "kept errors/warnings/test failure markers with local context"
+} elseif ($exitCode -eq 0) {
+    "kept passing command output up to MaxLines"
+} else {
+    "no diagnostic markers found; kept raw output up to MaxLines"
+}
+$next = if ($exitCode -eq 0) { "continue with the next narrow workflow step" } else { "rerun narrower or raise MaxLines if diagnostics are insufficient" }
+$provenance = Get-ProvenanceContext
+Write-Host ""
+Write-Host "=== PROVENANCE ==="
+Write-Host "Repo: $($provenance.Repo)"
+Write-Host "Git: $($provenance.Git)"
+Write-Host "Tool: run-compact.ps1"
+Write-Host "Scope: command=$Command; exit=$exitCode"
+Write-Host "Excluded: dependency/build banner and deprecation noise"
+Write-Host "Considered: $total raw lines"
+Write-Host "Returned: $shown lines"
+Write-Host "Reduction: $total -> $shown lines; compacted=$($wasReduced.ToString().ToLower())"
+Write-Host "Selection: $selection"
+Write-Host "Next: $next"
 
 exit $exitCode

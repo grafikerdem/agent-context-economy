@@ -59,6 +59,8 @@ Validation should match the risk and scope of the change. Start with the narrowe
 
 Escalate to broader validation when the targeted result is insufficient or the change has wider effects. Context economy should reduce noise, never weaken correctness.
 
+Every reduction should be explainable. Compact output should preserve enough provenance for a reviewer to understand why this context was shown, what was omitted, and which smallest next step can recover missing evidence.
+
 ## Relationship to Other Repository Tools
 
 ACE complements AST indexes, language servers, semantic search, and MCP-based repository tools. Those systems can identify symbols and relationships more precisely; ACE supplies the operating discipline around them: orient first, query deliberately, read selectively, preserve small continuity state, and validate with compact output.

@@ -40,6 +40,8 @@ Use raw `rg`, `Get-ChildItem`, `Select-String`, or direct source reads only when
 
 Before falling back, state what information is missing. Keep the raw query bounded by path, pattern, file type, or output limit. Summarize the result before continuing and return to targeted reading as soon as the likely files are known.
 
+Agents must prefer helper output with provenance over raw shortened output. If a compact result lacks enough provenance to justify the next step, stop and request a narrower query or run the next smallest read.
+
 ## Approval Economy Policy
 
 Treat approvals as a limited interaction budget:

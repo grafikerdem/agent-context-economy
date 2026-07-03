@@ -1,4 +1,4 @@
 ﻿"Metric","Vanilla","Agent","Reduction"
-"Terminal output","354 lines","20 lines","94%"
-"Source file read","509 lines","51 lines","90%"
+"Terminal output","354 lines","33 lines","91%"
+"Source file read","509 lines","64 lines","87%"
 "Shell commands","7 commands","2 commands","71%"

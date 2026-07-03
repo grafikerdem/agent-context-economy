@@ -2,6 +2,26 @@
 
 All notable changes to Agent Context Economy are documented in this file.
 
+## [0.2.5] - 2026-07-03
+
+### Added
+
+- Compact `PROVENANCE` footers for `run-compact.ps1`, `search.ps1`, `investigate.ps1`, `read-window.ps1`, `read-symbol.ps1`, `diff-summary.ps1`, and `diff-file.ps1`.
+- Provenance details for repository and Git identity, evaluated scope, exclusions, considered and returned context, reduction decisions, selection reasons, and the smallest recommended next step.
+- Smoke-test assertions for provenance markers across command compaction, discovery, and targeted-reading helpers.
+
+### Changed
+
+- Documented explainable context reduction as a cross-cutting ACE quality rather than a new stack layer.
+- Updated the example agent policy to prefer provenance-bearing compact output and request narrower evidence when provenance is insufficient.
+- Regenerated benchmark artefacts to include the bounded provenance overhead.
+
+### Compatibility
+
+- Existing helper parameters and primary output sections remain backward compatible.
+- Windows PowerShell 5.1 or later; no external runtime or package dependencies.
+- The six-layer ACE workflow and workflow graphic remain unchanged.
+
 ## [0.2.0] - 2026-07-03
 
 ### Added

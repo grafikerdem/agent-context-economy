@@ -80,14 +80,14 @@ try {
         -Name "search compact summary" `
         -DisplayCommand ".\scripts\ai\search.ps1 -Pattern `"SampleService`" -Path `"$tempDir`"" `
         -Script { & (Join-Path $PSScriptRoot "search.ps1") -Pattern "SampleService" -Path $tempDir } `
-        -Expected @("AI SEARCH SUMMARY", "TOP FILES", "RECOMMENDED NEXT STEP") `
+        -Expected @("AI SEARCH SUMMARY", "TOP FILES", "RECOMMENDED NEXT STEP", "=== PROVENANCE ===") `
         -MaxAllowedLines 90
 
     Run-Check `
         -Name "investigate batching" `
         -DisplayCommand ".\scripts\ai\investigate.ps1 -Patterns `"SampleService`",`"manager`" -Paths `"$tempDir`"" `
         -Script { & (Join-Path $PSScriptRoot "investigate.ps1") -Patterns "SampleService","manager" -Paths $tempDir } `
-        -Expected @("AI INVESTIGATION SUMMARY", "RECOMMENDED NEXT 3 COMMANDS", "AGENT INSTRUCTION") `
+        -Expected @("AI INVESTIGATION SUMMARY", "RECOMMENDED NEXT 3 COMMANDS", "AGENT INSTRUCTION", "=== PROVENANCE ===") `
         -MaxAllowedLines 140
 
     Run-Check `
@@ -101,14 +101,14 @@ try {
         -Name "read-window" `
         -DisplayCommand ".\scripts\ai\read-window.ps1 -Path `"$tempFile`" -Line 8 -Context 5" `
         -Script { & (Join-Path $PSScriptRoot "read-window.ps1") -Path $tempFile -Line 8 -Context 5 } `
-        -Expected @("SOURCE WINDOW", "GUIDANCE") `
+        -Expected @("SOURCE WINDOW", "GUIDANCE", "=== PROVENANCE ===") `
         -MaxAllowedLines 100
 
     Run-Check `
         -Name "read-symbol" `
         -DisplayCommand ".\scripts\ai\read-symbol.ps1 -Path `"$tempFile`" -Symbol `"manager`" -Context 5" `
         -Script { & (Join-Path $PSScriptRoot "read-symbol.ps1") -Path $tempFile -Symbol "manager" -Context 5 } `
-        -Expected @("SYMBOL NAVIGATOR", "MATCH CANDIDATES", "SELECTED SYMBOL WINDOW") `
+        -Expected @("SYMBOL NAVIGATOR", "MATCH CANDIDATES", "SELECTED SYMBOL WINDOW", "=== PROVENANCE ===") `
         -MaxAllowedLines 120
 
     Run-Check `
@@ -122,7 +122,7 @@ try {
         -Name "run-compact simple command" `
         -DisplayCommand ".\scripts\ai\run-compact.ps1 -Command `"Write-Output ok`"" `
         -Script { & (Join-Path $PSScriptRoot "run-compact.ps1") -Command "Write-Output ok" -MaxLines 80 } `
-        -Expected @("COMMAND", "RESULT") `
+        -Expected @("COMMAND", "RESULT", "=== PROVENANCE ===") `
         -MaxAllowedLines 120
 
     Run-Check `

@@ -88,6 +88,41 @@ function Get-RecommendedCommand {
     return ".\scripts\ai\read-window.ps1 -Path `"$Path`" -Line $($firstMatch.Line) -Context $context"
 }
 
+function Get-ProvenanceContext {
+    $context = @{ Repo = "unknown"; Git = "unknown@unknown" }
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        $repo = & git rev-parse --show-toplevel 2>$null
+        if ($LASTEXITCODE -eq 0 -and $repo) { $context.Repo = ($repo | Select-Object -First 1) }
+        $branch = & git branch --show-current 2>$null
+        $head = & git rev-parse --short HEAD 2>$null
+        if ($LASTEXITCODE -eq 0 -and $head) {
+            if (-not $branch) { $branch = "detached" }
+            $context.Git = "$branch@$head"
+        }
+    }
+    return $context
+}
+
+function Write-InvestigationProvenance {
+    param([int]$ReturnedFiles,[int]$ReturnedMatches,[string[]]$Commands)
+    $provenance = Get-ProvenanceContext
+    $commandCount = @($Commands).Count
+    $next = if ($commandCount -gt 0) { (@($Commands) | Select-Object -First 3) -join " | " } else { "narrow patterns/paths, then run one smallest read" }
+    $reduced = ($store.Count -gt $ReturnedFiles -or $totalMatches -ge $MaxTotalMatches)
+    Write-Host ""
+    Write-Host "=== PROVENANCE ==="
+    Write-Host "Repo: $($provenance.Repo)"
+    Write-Host "Git: $($provenance.Git)"
+    Write-Host "Tool: investigate.ps1"
+    Write-Host "Scope: patterns=$($Patterns -join ', '); paths=$($Paths -join ', '); mode=$mode"
+    Write-Host "Excluded: vendor, node_modules, storage, caches, .git, build outputs, min/maps"
+    Write-Host "Considered: $($store.Count) matched files; $totalMatches sampled occurrences"
+    Write-Host "Returned: $ReturnedFiles files; $ReturnedMatches preview matches; $commandCount commands"
+    Write-Host "Reduction: limits files=$MaxFiles/per-file=$MaxMatchesPerFile/total=$MaxTotalMatches; compacted=$($reduced.ToString().ToLower())"
+    Write-Host "Selection: ranked by occurrence count and useful non-import matches"
+    Write-Host "Next: $next"
+}
+
 Write-Host ""
 Write-Host "=== AI INVESTIGATION SUMMARY ==="
 Write-Host "Patterns: $($Patterns -join ', ')"
@@ -159,6 +194,7 @@ if (-not $files -or $files.Count -eq 0) {
     Write-Host ""
     Write-Host "=== GUIDANCE ==="
     Write-Host "Try fewer/broader patterns, or verify the affected domain from docs/context first."
+    Write-InvestigationProvenance -ReturnedFiles 0 -ReturnedMatches 0 -Commands @()
     exit 0
 }
 
@@ -204,3 +240,6 @@ Write-Host "Pick only the top 1-3 relevant files."
 Write-Host "Prefer read-symbol.ps1 for classes, methods, services, controllers, policies, models, and React components."
 Write-Host "Prefer read-window.ps1 for routes, migrations, config arrays, and nearby test assertions."
 Write-Host "Do not continue exploratory search chains unless these results are insufficient."
+
+$returnedMatches = @($files | ForEach-Object { $_.Value.Matches }).Count
+Write-InvestigationProvenance -ReturnedFiles $files.Count -ReturnedMatches $returnedMatches -Commands @($recommended | Select-Object -First 3)

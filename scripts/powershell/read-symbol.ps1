@@ -17,6 +17,39 @@ $ErrorActionPreference = "Stop"
 function Fail($Message) { Write-Host "ERROR: $Message" -ForegroundColor Red; exit 1 }
 if (-not (Test-Path -LiteralPath $Path)) { Fail "File not found: $Path" }
 
+function Get-ProvenanceContext {
+    $context = @{ Repo = "unknown"; Git = "unknown@unknown" }
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        $repo = & git rev-parse --show-toplevel 2>$null
+        if ($LASTEXITCODE -eq 0 -and $repo) { $context.Repo = ($repo | Select-Object -First 1) }
+        $branch = & git branch --show-current 2>$null
+        $head = & git rev-parse --short HEAD 2>$null
+        if ($LASTEXITCODE -eq 0 -and $head) {
+            if (-not $branch) { $branch = "detached" }
+            $context.Git = "$branch@$head"
+        }
+    }
+    return $context
+}
+
+function Write-SymbolProvenance {
+    param([int]$OutputLineCount,[string]$SelectedLine,[string]$SelectedKind,[string]$Next)
+    $provenance = Get-ProvenanceContext
+    $reduced = ($OutputLineCount -lt $total -or $candidates.Count -gt 20)
+    Write-Host ""
+    Write-Host "=== PROVENANCE ==="
+    Write-Host "Repo: $($provenance.Repo)"
+    Write-Host "Git: $($provenance.Git)"
+    Write-Host "Tool: read-symbol.ps1"
+    Write-Host "Scope: path=$Path; requested=$Symbol; normalized=$normalizedSymbol"
+    Write-Host "Excluded: source outside selected symbol window; candidates after first 20"
+    Write-Host "Considered: $total lines; $($candidates.Count) candidates"
+    Write-Host "Returned: $OutputLineCount source lines; selected=$SelectedLine/$SelectedKind"
+    Write-Host "Reduction: max-output=$MaxOutputLines; compacted=$($reduced.ToString().ToLower())"
+    Write-Host "Selection: definition preferred over reference; local symbol block selected"
+    Write-Host "Next: $Next"
+}
+
 function Normalize-Symbol {
     param([string]$Value)
     $v = $Value.Trim()
@@ -107,6 +140,7 @@ Write-Host "=== MATCH CANDIDATES ==="
 if ($candidates.Count -eq 0) {
     Write-Host "No symbol candidates found."
     Write-Host "Try find-in-file.ps1 with a more exact keyword."
+    Write-SymbolProvenance -OutputLineCount 0 -SelectedLine "unknown" -SelectedKind "unknown" -Next "use find-in-file with a more exact keyword"
     exit 0
 }
 
@@ -146,3 +180,5 @@ Write-Host "=== GUIDANCE ==="
 Write-Host "Use this symbol window first."
 Write-Host "If related imports/types/state are missing, read one nearby window with read-window.ps1 rather than dumping the whole file."
 Write-Host "If the selected match is a reference, rerun with a more exact definition symbol."
+
+Write-SymbolProvenance -OutputLineCount ($end - $start + 1) -SelectedLine $selected.Line -SelectedKind $selected.Kind -Next "read-window nearby if imports, types, or context are missing"

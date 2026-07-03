@@ -4,8 +4,8 @@
 
 Typical benchmark results:
 
-- **94% less terminal output**
-- **90% less source code read**
+- **91% less terminal output**
+- **87% less source code read**
 - **71% fewer shell commands**
 
 ---
@@ -20,16 +20,16 @@ This is used only for relative comparisons. Actual token counts vary by model an
 
 | Workflow | Conventional workflow | Agent Context Economy |
 |---|---:|---:|
-| Terminal output | 354 lines | 20 lines |
-| Source file read | 509 lines | 51 lines |
+| Terminal output | 354 lines | 33 lines |
+| Source file read | 509 lines | 64 lines |
 | Shell commands | 7 commands | 2 commands |
 
 ## Reduction summary
 
 | Metric | Reduction |
 |---|---:|
-| Terminal output | 94% |
-| Source file read | 90% |
+| Terminal output | 91% |
+| Source file read | 87% |
 | Shell commands | 71% |
 
 ## Charts
@@ -41,7 +41,7 @@ xychart-beta
     title "Output and source reading reduction (%)"
     x-axis ["Terminal output", "Source file read", "Shell commands"]
     y-axis "Reduction %" 0 --> 100
-    bar [94, 90, 71]
+    bar [91, 87, 71]
 ```
 
 ### Conventional vs agent workflow
@@ -52,7 +52,7 @@ xychart-beta
     x-axis ["Terminal output", "Source file read", "Shell commands"]
     y-axis "Count"
     bar [354, 509, 7]
-    line [20, 51, 2]
+    line [33, 64, 2]
 ```
 
 ---

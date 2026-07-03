@@ -34,8 +34,9 @@ Read the full [methodology](docs/methodology.md) for the principles and fallback
 - [Methodology](docs/methodology.md) — the six-layer behavior model.
 - [MCP and discovery-engine integration](docs/mcp-integration.md) — using ACE with repository-aware tools, AST indexes, semantic search, and MCP servers.
 - [Source reading economy](docs/source-reading-economy.md) and [command budget](docs/command-budget.md) — operational policies.
-- [v0.2.0 release notes](docs/releases/v0.2.0.md) — highlights, compatibility, verification, and publication checklist.
-- [Changelog](CHANGELOG.md) — release history and the v0.2.0 scope.
+- [v0.2.5 release notes](docs/releases/v0.2.5.md) — explainable context reduction, compatibility, and verification.
+- [v0.2.0 release notes](docs/releases/v0.2.0.md) — the six-layer methodology release.
+- [Changelog](CHANGELOG.md) — complete release history.
 
 ## Benchmark
 
@@ -43,11 +44,17 @@ Read the full [methodology](docs/methodology.md) for the principles and fallback
 
 | Metric | Conventional workflow | ACE workflow | Reduction |
 | :--- | :---: | :---: | :---: |
-| Terminal output | 354 lines | **20 lines** | **94%** |
-| Source read | 509 lines | **51 lines** | **90%** |
+| Terminal output | 354 lines | **33 lines** | **91%** |
+| Source read | 509 lines | **64 lines** | **87%** |
 | Shell commands | 7 commands | **2 commands** | **71%** |
 
 This is a reproducible synthetic benchmark; results vary by repository and agent behavior. Run `scripts/powershell/benchmark.ps1` to inspect it locally.
+
+### Explainable context reduction
+
+ACE does not only shorten output. Compacted helper output includes a small provenance footer that makes the evaluated scope, exclusions, selection reason, reduction, and recommended next step visible. The goal is to reduce the risk of invisible selection bias without giving back the context savings.
+
+Explainable context reduction is not a seventh ACE layer. It is a cross-cutting quality applied to compacting helpers across Discovery, Targeted Reading, and Validation, so the existing six-layer workflow remains unchanged.
 
 ## Toolkit
 
