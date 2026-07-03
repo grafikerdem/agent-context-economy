@@ -2,6 +2,56 @@
 
 Copy the relevant sections into your project-level `AGENTS.md`, `CLAUDE.md`, or equivalent agent instruction file.
 
+## Agent Context Economy Stack
+
+Use the stack to acquire context in layers:
+
+1. **Continuity** — recover the current task, relevant paths, and useful prior searches from small disposable state.
+2. **Repository Map** — orient from directory structure, file counts, source locations, and likely entry points.
+3. **Discovery** — narrow the repository with one focused, batched investigation.
+4. **Targeted Reading** — read a symbol first, then one nearby window if needed.
+5. **Workflow** — take bounded steps and keep only metadata that prevents repeated discovery.
+6. **Validation** — run the narrowest relevant check and compact noisy output.
+
+The stack is a decision framework, not a requirement to run every helper for every task.
+
+## Startup Policy
+
+At the start of a repository task:
+
+1. Read the repository's own instruction file first when present.
+2. Run `agent-start.ps1` to inspect existing continuity and repository-map summaries.
+3. If no repository map exists, or the structure has materially changed, run `repo-map.ps1` once.
+4. Set a short task with `session-state.ps1 set-task`; record only a bounded set of relevant file paths and useful searches.
+5. Follow the preferred path: `repo-map -> investigate -> read-symbol -> read-window -> run-compact`.
+
+Skip startup ceremony for a trivial change in a known file. Never store secrets, file contents, command output, or large histories in session state.
+
+## Raw Exploration Fallback Policy
+
+ACE helpers are preferred, but they must not block necessary investigation.
+
+Use raw `rg`, `Get-ChildItem`, `Select-String`, or direct source reads only when:
+
+- a helper cannot express the required query,
+- structured or semantic navigation is unavailable or incomplete,
+- exact raw output is required to diagnose a helper failure, or
+- a compact result omitted evidence needed for a decision.
+
+Before falling back, state what information is missing. Keep the raw query bounded by path, pattern, file type, or output limit. Summarize the result before continuing and return to targeted reading as soon as the likely files are known.
+
+## Approval Economy Policy
+
+Treat approvals as a limited interaction budget:
+
+- combine related read-only checks into one informative command when safe,
+- prefer commands with reusable, narrowly scoped approval rules,
+- do not request approval for speculative or redundant exploration,
+- never broaden a write or destructive action merely to reduce approval count,
+- when approval is required, explain the exact action, scope, and reason in one concise request.
+
+Approval economy reduces interruptions; it never overrides least privilege, repository boundaries, or user intent.
+
 ## Command Budget / Tool Approval Economy
 
 Helper scripts reduce context usage, but agents must also minimize command count.

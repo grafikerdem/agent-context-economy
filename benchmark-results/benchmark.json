@@ -1,0 +1,26 @@
+﻿{
+    "generated_at":  "2026-07-03T13:04:56Z",
+    "terminal_reduction":  94,
+    "source_reduction":  90,
+    "command_reduction":  71,
+    "rows":  [
+                 {
+                     "metric":  "Terminal output",
+                     "vanilla":  "354 lines",
+                     "agent":  "20 lines",
+                     "reduction":  "94%"
+                 },
+                 {
+                     "metric":  "Source file read",
+                     "vanilla":  "509 lines",
+                     "agent":  "51 lines",
+                     "reduction":  "90%"
+                 },
+                 {
+                     "metric":  "Shell commands",
+                     "vanilla":  "7 commands",
+                     "agent":  "2 commands",
+                     "reduction":  "71%"
+                 }
+             ]
+}

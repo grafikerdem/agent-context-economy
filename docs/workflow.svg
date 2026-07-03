@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="720" viewBox="0 0 760 720" role="img" aria-labelledby="title description">
+  <title id="title">Agent Context Economy Stack</title>
+  <desc id="description">A vertical workflow from Continuity through Repository Map, Discovery, Targeted Reading, Workflow, and Validation.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#21262d"/>
+      <stop offset="1" stop-color="#30363d"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff"/>
+    </marker>
+  </defs>
+  <rect width="760" height="720" rx="20" fill="url(#background)"/>
+  <rect x="1" y="1" width="758" height="718" rx="20" fill="none" stroke="#30363d"/>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="380" y="42" text-anchor="middle" fill="#f0f6fc" font-size="22" font-weight="700">Agent Context Economy Stack</text>
+    <text x="380" y="66" text-anchor="middle" fill="#8b949e" font-size="12">Acquire context in layers. Expand only when evidence requires it.</text>
+
+    <g fill="url(#card)" stroke-width="1.5">
+      <rect x="185" y="92" width="390" height="68" rx="12" stroke="#3fb950"/>
+      <rect x="185" y="194" width="390" height="68" rx="12" stroke="#58a6ff"/>
+      <rect x="185" y="296" width="390" height="68" rx="12" stroke="#d2a8ff"/>
+      <rect x="185" y="398" width="390" height="68" rx="12" stroke="#f0883e"/>
+      <rect x="185" y="500" width="390" height="68" rx="12" stroke="#a5d6ff"/>
+      <rect x="185" y="602" width="390" height="68" rx="12" stroke="#f2cc60"/>
+    </g>
+
+    <g text-anchor="middle">
+      <text x="380" y="122" fill="#f0f6fc" font-size="17" font-weight="700">Continuity</text>
+      <text x="380" y="143" fill="#8b949e" font-size="11">Recover the task, relevant paths, and useful searches</text>
+
+      <text x="380" y="224" fill="#f0f6fc" font-size="17" font-weight="700">Repository Map</text>
+      <text x="380" y="245" fill="#8b949e" font-size="11">Orient from structure, source locations, and entry points</text>
+
+      <text x="380" y="326" fill="#f0f6fc" font-size="17" font-weight="700">Discovery</text>
+      <text x="380" y="347" fill="#8b949e" font-size="11">Narrow the repository to a few evidence-backed targets</text>
+
+      <text x="380" y="428" fill="#f0f6fc" font-size="17" font-weight="700">Targeted Reading</text>
+      <text x="380" y="449" fill="#8b949e" font-size="11">Read exact symbols and bounded local windows</text>
+
+      <text x="380" y="530" fill="#f0f6fc" font-size="17" font-weight="700">Workflow</text>
+      <text x="380" y="551" fill="#8b949e" font-size="11">Act in bounded steps and retain only useful continuity</text>
+
+      <text x="380" y="632" fill="#f0f6fc" font-size="17" font-weight="700">Validation</text>
+      <text x="380" y="653" fill="#8b949e" font-size="11">Run the narrowest relevant check with compact output</text>
+    </g>
+
+    <g stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)">
+      <line x1="380" y1="166" x2="380" y2="186"/>
+      <line x1="380" y1="268" x2="380" y2="288"/>
+      <line x1="380" y1="370" x2="380" y2="390"/>
+      <line x1="380" y1="472" x2="380" y2="492"/>
+      <line x1="380" y1="574" x2="380" y2="594"/>
+    </g>
+  </g>
+</svg>

@@ -24,12 +24,12 @@ function Run-Check {
 
     Section $Name
     if ($DisplayCommand) { Write-Host "Command: $DisplayCommand" }
-    $tempFile = New-TemporaryFile
+    $captureFile = New-TemporaryFile
     try {
         $global:LASTEXITCODE = 0
-        & $Script *>&1 | Out-File -FilePath $tempFile.FullName -Encoding utf8
+        & $Script *>&1 | Out-File -FilePath $captureFile.FullName -Encoding utf8
         $exitCode = $LASTEXITCODE
-        $lines = @(Get-Content -LiteralPath $tempFile.FullName -ErrorAction SilentlyContinue)
+        $lines = @(Get-Content -LiteralPath $captureFile.FullName -ErrorAction SilentlyContinue)
         $lineCount = $lines.Count
         $joined = ($lines -join "`n")
         $lines | Select-Object -First $MaxPreviewLines
@@ -40,7 +40,7 @@ function Run-Check {
         }
         if ($lineCount -le $MaxAllowedLines) { Pass "$Name output line count is acceptable: $lineCount" } else { Warn "$Name output is large: $lineCount lines. Consider tightening compact behavior." }
     }
-    finally { Remove-Item -LiteralPath $tempFile.FullName -Force -ErrorAction SilentlyContinue }
+    finally { Remove-Item -LiteralPath $captureFile.FullName -Force -ErrorAction SilentlyContinue }
 }
 
 Section "AI Script Smoke Test"
@@ -51,6 +51,8 @@ Get-ChildItem $PSScriptRoot -Filter *.ps1 -ErrorAction SilentlyContinue | Unbloc
 
 $tempDir = Join-Path (Get-Location) ".agent-context-economy-smoke"
 New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
+$tempSourceDir = Join-Path $tempDir "src"
+New-Item -ItemType Directory -Force -Path $tempSourceDir | Out-Null
 $tempFile = Join-Path $tempDir "SampleService.php"
 @'
 <?php
@@ -70,6 +72,8 @@ class SampleService
     }
 }
 '@ | Out-File -LiteralPath $tempFile -Encoding utf8
+"# Smoke fixture" | Out-File -LiteralPath (Join-Path $tempDir "README.md") -Encoding utf8
+"Write-Output 'fixture'" | Out-File -LiteralPath (Join-Path $tempSourceDir "main.ps1") -Encoding utf8
 
 try {
     Run-Check `
@@ -120,6 +124,56 @@ try {
         -Script { & (Join-Path $PSScriptRoot "run-compact.ps1") -Command "Write-Output ok" -MaxLines 80 } `
         -Expected @("COMMAND", "RESULT") `
         -MaxAllowedLines 120
+
+    Run-Check `
+        -Name "repository map generation" `
+        -DisplayCommand ".\scripts\ai\repo-map.ps1 -Root `"$tempDir`"" `
+        -Script { & (Join-Path $PSScriptRoot "repo-map.ps1") -Root $tempDir } `
+        -Expected @("Repository map written", "Files counted") `
+        -MaxAllowedLines 20
+
+    $repoMapPath = Join-Path $tempDir ".agent-context/repo-map.md"
+    if (Test-Path -LiteralPath $repoMapPath -PathType Leaf) {
+        $repoMapText = Get-Content -LiteralPath $repoMapPath -Raw -Encoding UTF8
+        if (
+            $repoMapText -match '# Repository Map' -and
+            $repoMapText -match 'Common source directories' -and
+            $repoMapText -match '`src/`' -and
+            $repoMapText -match '`README.md`'
+        ) {
+            Pass "repository map contains expected Markdown sections"
+        } else {
+            Fail "repository map is missing expected Markdown sections"
+        }
+    } else {
+        Fail "repository map file was not created"
+    }
+
+    Run-Check `
+        -Name "session state lifecycle" `
+        -DisplayCommand ".\scripts\ai\session-state.ps1 set-task/add-file/add-search/show" `
+        -Script {
+            & (Join-Path $PSScriptRoot "session-state.ps1") set-task -Value "Smoke-test task" -Root $tempDir
+            & (Join-Path $PSScriptRoot "session-state.ps1") add-file -Value $tempFile -Root $tempDir
+            & (Join-Path $PSScriptRoot "session-state.ps1") add-search -Value "SampleService manager" -Root $tempDir
+            & (Join-Path $PSScriptRoot "session-state.ps1") show -Root $tempDir
+        } `
+        -Expected @("Session task updated", "Relevant file recorded", "Useful search recorded", "ACE SESSION STATE", "Smoke-test task") `
+        -MaxAllowedLines 40
+
+    Run-Check `
+        -Name "agent startup briefing" `
+        -DisplayCommand ".\scripts\ai\agent-start.ps1 -Root `"$tempDir`"" `
+        -Script { & (Join-Path $PSScriptRoot "agent-start.ps1") -Root $tempDir } `
+        -Expected @("ACE STARTUP BRIEFING", "Smoke-test task", "Repository map", "repo-map -> investigate -> read-symbol -> read-window -> run-compact") `
+        -MaxAllowedLines 60
+
+    Run-Check `
+        -Name "session state clear" `
+        -DisplayCommand ".\scripts\ai\session-state.ps1 clear" `
+        -Script { & (Join-Path $PSScriptRoot "session-state.ps1") clear -Root $tempDir } `
+        -Expected @("Session state cleared") `
+        -MaxAllowedLines 10
 }
 finally {
     Remove-Item -LiteralPath $tempDir -Recurse -Force -ErrorAction SilentlyContinue
