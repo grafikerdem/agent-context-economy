@@ -1,6 +1,6 @@
 param(
     [string]$Root = ".",
-    [int]$MaxMapLines = 12
+    [int]$MaxMapLines = 18
 )
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -43,7 +43,7 @@ Write-Host ""
 Write-Host "Repository map:"
 if (Test-Path -LiteralPath $mapPath -PathType Leaf) {
     $mapLines = @(Get-Content -LiteralPath $mapPath -Encoding UTF8 | Where-Object {
-        $_ -match '^(Files counted:|## |\- `)'
+        $_ -match '^(Generated:|Files counted:|Git commit:|Git tree:|Git dirty state:|Valid until:|Authority:|## |\- `)'
     } | Select-Object -First $MaxMapLines)
     foreach ($line in $mapLines) { Write-Host "  $line" }
     if ($mapLines.Count -eq 0) { Write-Host "  Present: $mapPath" }

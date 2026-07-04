@@ -8,6 +8,9 @@ All notable changes to Agent Context Economy are documented in this file.
 
 - Repository maps now include git commit, tree hash, dirty-state, validity, and authority notes so agents can treat generated maps as orientation rather than stale source of truth.
 
+### Changed
+
+- Startup briefings now surface repository-map freshness metadata while retaining compact structural orientation.
 
 ## [0.2.5] - 2026-07-03
 

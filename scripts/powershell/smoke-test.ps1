@@ -169,7 +169,7 @@ try {
         -Name "agent startup briefing" `
         -DisplayCommand ".\scripts\ai\agent-start.ps1 -Root `"$tempDir`"" `
         -Script { & (Join-Path $PSScriptRoot "agent-start.ps1") -Root $tempDir } `
-        -Expected @("ACE STARTUP BRIEFING", "Smoke-test task", "Repository map", "repo-map -> investigate -> read-symbol -> read-window -> run-compact") `
+        -Expected @("ACE STARTUP BRIEFING", "Smoke-test task", "Repository map", "Generated:", "Git commit:", "Git tree:", "Git dirty state:", "Valid until:", "Authority:", "repo-map -> investigate -> read-symbol -> read-window -> run-compact") `
         -MaxAllowedLines 60
 
     Run-Check `
