@@ -60,7 +60,7 @@ Explainable context reduction is not a seventh ACE layer. It is a cross-cutting 
 
 | Script | What it does |
 | :--- | :--- |
-| `repo-map.ps1` | Writes a lightweight Markdown repository map to `.agent-context/repo-map.md`. |
+| `repo-map.ps1` | Writes a lightweight Markdown repository map to `.agent-context/repo-map.md`, including git freshness metadata so agents know when to regenerate it. |
 | `session-state.ps1` | Maintains small, disposable continuity metadata in `.agent-context/session-state.json`. |
 | `agent-start.ps1` | Prints a compact briefing from the map and session state when available. |
 | `investigate.ps1` | Batches related searches into one structured discovery report. |
