@@ -28,6 +28,44 @@ function Test-Excluded([string]$RelativePath) {
     return $false
 }
 
+function Get-GitValue([string]$RootPath, [string[]]$Arguments) {
+    try {
+        $output = & git -C $RootPath @Arguments 2>$null
+        if ($LASTEXITCODE -eq 0 -and $null -ne $output) {
+            return (($output | Out-String).Trim())
+        }
+    } catch {
+        return $null
+    }
+    return $null
+}
+
+function Get-GitMetadata([string]$RootPath) {
+    $insideWorkTree = Get-GitValue -RootPath $RootPath -Arguments @('rev-parse', '--is-inside-work-tree')
+    if ($insideWorkTree -ne 'true') {
+        return [PSCustomObject]@{
+            Commit = 'unavailable'
+            Tree = 'unavailable'
+            DirtyState = 'unknown (not a git work tree)'
+        }
+    }
+
+    $commit = Get-GitValue -RootPath $RootPath -Arguments @('rev-parse', 'HEAD')
+    $tree = Get-GitValue -RootPath $RootPath -Arguments @('rev-parse', 'HEAD^{tree}')
+    $status = Get-GitValue -RootPath $RootPath -Arguments @('status', '--porcelain')
+    $dirtyState = 'clean'
+    if (-not [string]::IsNullOrWhiteSpace($status)) { $dirtyState = 'dirty' }
+
+    if ([string]::IsNullOrWhiteSpace($commit)) { $commit = 'unavailable' }
+    if ([string]::IsNullOrWhiteSpace($tree)) { $tree = 'unavailable' }
+
+    return [PSCustomObject]@{
+        Commit = $commit
+        Tree = $tree
+        DirtyState = $dirtyState
+    }
+}
+
 if (-not (Test-Path -LiteralPath $Root -PathType Container)) { Fail "Repository root not found: $Root" }
 
 $rootPath = (Resolve-Path -LiteralPath $Root).Path
@@ -71,12 +109,19 @@ $entryPoints = @($allFiles | Where-Object {
     return $false
 } | Sort-Object FullName | Select-Object -First $MaxEntries)
 
+$gitMetadata = Get-GitMetadata -RootPath $rootPath
+
 $lines = New-Object System.Collections.Generic.List[string]
 $lines.Add('# Repository Map')
 $lines.Add('')
 $lines.Add("Generated: $([DateTime]::UtcNow.ToString('yyyy-MM-dd HH:mm:ss')) UTC")
 $lines.Add("Root: ``$rootPath``")
 $lines.Add("Files counted: $($allFiles.Count)")
+$lines.Add("Git commit: ``$($gitMetadata.Commit)``")
+$lines.Add("Git tree: ``$($gitMetadata.Tree)``")
+$lines.Add("Git dirty state: $($gitMetadata.DirtyState)")
+$lines.Add('Valid until: regenerate this map after files are added, removed, moved, or when the git tree changes.')
+$lines.Add('Authority: use this map for orientation only; read or grep target files before editing.')
 $lines.Add('')
 $lines.Add('## Top-level directories')
 $lines.Add('')

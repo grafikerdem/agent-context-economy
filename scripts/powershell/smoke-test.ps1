@@ -137,6 +137,10 @@ try {
         $repoMapText = Get-Content -LiteralPath $repoMapPath -Raw -Encoding UTF8
         if (
             $repoMapText -match '# Repository Map' -and
+            $repoMapText -match 'Git commit:' -and
+            $repoMapText -match 'Git tree:' -and
+            $repoMapText -match 'Valid until:' -and
+            $repoMapText -match 'Authority:' -and
             $repoMapText -match 'Common source directories' -and
             $repoMapText -match '`src/`' -and
             $repoMapText -match '`README.md`'
