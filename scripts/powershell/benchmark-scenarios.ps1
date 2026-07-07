@@ -182,5 +182,68 @@ foreach ($s in $scenarios) {
 
 $resultsTable | Format-Table -AutoSize
 
+# ---------------------------------------------------------------------------
+# SVG Generation
+# ---------------------------------------------------------------------------
+$repoRoot = Resolve-Path (Join-Path $scriptDir "../..")
+$outDir = Join-Path $repoRoot "benchmark-results"
+$svgPath = Join-Path $outDir "scenarios.svg"
+
+$svgColors = @("#3fb950", "#58a6ff", "#d2a8ff")
+$chartRows = @()
+$y = 146
+
+for ($idx = 0; $idx -lt $scenarios.Count; $idx++) {
+    $s = $scenarios[$idx]
+    $reductionTokens = [Math]::Round((1 - ($s.NewTokens / $s.OldTokens)) * 100, 1)
+    
+    $chartRows += [pscustomobject]@{
+        Label = $s.Name
+        Detail = "$($s.OldTokens) -> $($s.NewTokens) tokens (Lines: $($s.OldLines) -> $($s.NewLines))"
+        Reduction = $reductionTokens
+        Color = $svgColors[$idx]
+        Y = $y
+    }
+    $y += 72
+}
+
+function Escape-Xml {
+    param([AllowEmptyString()][string]$Text)
+    return [System.Security.SecurityElement]::Escape($Text)
+}
+
+$svg = New-Object System.Collections.Generic.List[string]
+$svg.Add('<svg xmlns="http://www.w3.org/2000/svg" width="620" height="384" viewBox="0 0 620 384" role="img" aria-labelledby="title description">')
+$svg.Add('  <title id="title">ACE Scenario Token Reduction Benchmark</title>')
+$svg.Add('  <desc id="description">Measured token reductions for common targeted reading scenarios.</desc>')
+$svg.Add('  <rect width="620" height="384" rx="16" fill="#0d1117"/>')
+$svg.Add('  <rect x="1" y="1" width="618" height="382" rx="16" fill="#161b22" stroke="#30363d"/>')
+$svg.Add('  <g font-family="Segoe UI, Arial, sans-serif">')
+$svg.Add('    <text x="32" y="40" fill="#f0f6fc" font-size="18" font-weight="700">ACE Target Scenarios</text>')
+$svg.Add('    <text x="32" y="62" fill="#8b949e" font-size="13">Token Economy Savings by Scenario</text>')
+$svg.Add("    <text x=`"32`" y=`"80`" fill=`"#8b949e`" font-size=`"11`">Generated $([DateTime]::UtcNow.ToString('yyyy-MM-dd')) UTC - higher is better</text>")
+$svg.Add('    <line x1="32" y1="96" x2="588" y2="96" stroke="#30363d"/>')
+
+foreach ($row in $chartRows) {
+    $barWidth = [Math]::Round(338 * ([Math]::Max(0, [Math]::Min(100, $row.Reduction)) / 100), 0)
+    $labelY = $row.Y - 8
+    $detailY = $row.Y + 25
+    $percentY = $row.Y + 16
+    $svg.Add("    <text x=`"32`" y=`"$labelY`" fill=`"#c9d1d9`" font-size=`"13`" font-weight=`"600`">$(Escape-Xml $row.Label)</text>")
+    $svg.Add("    <text x=`"32`" y=`"$detailY`" fill=`"#8b949e`" font-size=`"11`">$(Escape-Xml $row.Detail)</text>")
+    $svg.Add("    <rect x=`"200`" y=`"$($row.Y)`" width=`"338`" height=`"22`" rx=`"6`" fill=`"#21262d`"/>")
+    $svg.Add("    <rect x=`"200`" y=`"$($row.Y)`" width=`"$barWidth`" height=`"22`" rx=`"6`" fill=`"$($row.Color)`"/>")
+    $svg.Add("    <text x=`"548`" y=`"$percentY`" fill=`"$($row.Color)`" font-size=`"14`" font-weight=`"700`">$($row.Reduction)%</text>")
+}
+
+$svg.Add('    <line x1="32" y1="332" x2="588" y2="332" stroke="#30363d"/>')
+$svg.Add('    <text x="32" y="354" fill="#8b949e" font-size="10">Benchmark scenarios compare progressive reading to raw file reads.</text>')
+$svg.Add('    <text x="32" y="370" fill="#8b949e" font-size="10">Estimates assume 1 token ~= 4 characters.</text>')
+$svg.Add('  </g>')
+$svg.Add('</svg>')
+$svg | Set-Content -Encoding UTF8 -LiteralPath $svgPath
+
+Write-Host "Scenario SVG written: $svgPath" -ForegroundColor Green
+
 # Clean up
 Remove-Item -LiteralPath $tempDir -Recurse -Force -ErrorAction SilentlyContinue
