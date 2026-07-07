@@ -5,14 +5,27 @@
   <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/Windows%20PowerShell-5.1%2B-blue?style=flat-square&logo=powershell" alt="Windows PowerShell 5.1+">
   <img src="https://img.shields.io/badge/Focus-AI%20Context%20Efficiency-orange?style=flat-square" alt="AI Context Efficiency">
-  <img src="https://img.shields.io/badge/Version-0.2.6--dev-purple?style=flat-square" alt="Version 0.2.6-dev">
+  <img src="https://img.shields.io/badge/Version-1.0.0-blue?style=flat-square" alt="Version 1.0.0">
 </p>
 
 > Stop wasting model context on noisy terminal dumps, repeated repository discovery, and oversized source reads.
 
-**Agent Context Economy is a methodology and reference implementation for context-efficient AI software development.** It helps agents preserve continuity, orient themselves quickly, discover deliberately, read the smallest useful source region, and validate changes without flooding the conversation.
+**ACE (Agent Context Economy) is a cross-platform, LLM-first progressive source navigation framework that helps autonomous coding agents retrieve only the code required for the current reasoning step.** It prevents token pollution, cuts context bills, and keeps agents focused by implementing a progressive retrieval model:
+```
+Discovery → Summary → Signature → Body → Bounded Window
+```
 
-ACE is designed for Windows repositories and works with coding agents such as Codex, Cursor, Windsurf, Claude Code, and Gemini. The methodology is tool-agnostic; the included scripts make it immediately usable without Node.js, Python, Rust, WSL, or Docker.
+ACE works with coding agents such as Codex, Cursor, Windsurf, Claude Code, and Gemini. The methodology is tool-agnostic; the included scripts make it immediately usable on Windows, macOS, and Linux without external dependencies.
+
+## Core Features of v1.0.0
+*   **Progressive Retrieval**: Tiers of code exposure designed for LLMs (`Summary`, `Signature`, `Body`, `Full` modes).
+*   **Context Budgeting**: Abstract token limits (`-Budget Small | Medium | Large`) allowing automatic, constraint-based output calculation.
+*   **Adaptive Next Command**: Autonomously directs agents on the next logical command under the `Next:` provenance footer.
+*   **Smart Truncation**: Intelligently truncates large method blocks to keep definitions, starts, and ends visible while omitting filler blocks.
+*   **Modular ACE Library**: Consolidates parser, formatting, and truncation helpers into side-effect-free shared PowerShell modules under `lib/`.
+*   **Cross-platform PowerShell 7 Support**: Runs natively on all shell environments.
+*   **macOS/Linux Bash Wrappers**: Executable wrappers for Unix-like filesystems in the `bin/` folder.
+*   **Benchmarks**: Verifiable local tools to measure line/token reductions.
 
 ## The Agent Context Economy Stack
 
@@ -35,6 +48,7 @@ Read the full [methodology](docs/methodology.md) for the principles and fallback
 - [Methodology](docs/methodology.md) — the six-layer behavior model.
 - [MCP and discovery-engine integration](docs/mcp-integration.md) — using ACE with repository-aware tools, AST indexes, semantic search, and MCP servers.
 - [Source reading economy](docs/source-reading-economy.md) and [command budget](docs/command-budget.md) — operational policies.
+- [v1.0.0 release notes](docs/releases/v1.0.0.md) — stable API, progressive modes, budgets, and stable components.
 - [v0.2.6 release notes](docs/releases/v0.2.6.md) — modularity, progressive retrieval, and context budgeting.
 - [Changelog](CHANGELOG.md) — complete release history.
 
@@ -43,13 +57,21 @@ Read the full [methodology](docs/methodology.md) for the principles and fallback
 [![Agent Context Economy benchmark showing reductions in terminal output, source reading, and shell commands](benchmark-results/benchmark.svg?v=0.2.6)](benchmark-results/benchmark.svg?v=0.2.6)
 [![Agent Context Economy Scenario token savings by scenario](benchmark-results/scenarios.svg?v=0.2.6)](benchmark-results/scenarios.svg?v=0.2.6)
 
+### Global Workflow Reduction
 | Metric | Conventional workflow | ACE workflow | Reduction |
 | :--- | :---: | :---: | :---: |
 | Terminal output | 354 lines | **33 lines** | **91%** |
 | Source read | 509 lines | **40 lines** | **92%** |
 | Shell commands | 7 commands | **2 commands** | **71%** |
 
-This is a reproducible synthetic benchmark; results vary by repository and agent behavior. Run `scripts/powershell/benchmark.ps1` to inspect it locally.
+### Scenario Token Economy
+| Target Scenario | Conventional Full Read | ACE Progressive Read | Token Reduction |
+| :--- | :---: | :---: | :---: |
+| **Symbol Inspection** | 1,078 tokens | **384 tokens** | **−64.4%** |
+| **React Component** | 3,356 tokens | **219 tokens** | **−93.5%** |
+| **Large PHP Class** | 8,586 tokens | **246 tokens** | **−97.1%** |
+
+This is a reproducible synthetic benchmark; results vary by repository and agent behavior. Run `scripts/powershell/benchmark.ps1` to inspect global metrics, or `scripts/powershell/benchmark-scenarios.ps1` to inspect specific scenarios locally.
 
 ### Explainable context reduction
 
@@ -141,19 +163,9 @@ repo-map -> investigate -> read-symbol -> read-window -> run-compact
 
 It is a decision path, not mandatory ceremony. Skip steps when the target is known, and use bounded raw exploration when a helper cannot express the query.
 
-## Migration to v0.2.6 (Progressive Edition)
-
-Version 0.2.6 introduces modular architecture and progressive reading modes to dramatically reduce LLM token usage:
-
-1. **Modular Refactoring**: Common parsing, formatting, and truncation routines have been consolidated into `scripts/powershell/lib/ACE.*.ps1` (completely side-effect-free during dot-source).
-2. **`read-text.ps1` Defaults**: Code files now default to `-Summary` mode (which outputs class/method/variable outline indexes) instead of dumping raw code. Non-code files default to `-Full`.
-3. **`read-symbol.ps1` Defaults**: Containers (classes, interfaces) default to `-Summary`. Executables (methods, functions) default to `-Signature`.
-4. **Context Budgeting**: Line limit constraints can be managed using abstract token budgets (`-Budget Small | Medium | Large`) for automatic truncation planning.
-5. **Adaptive Command Recommendations**: All tool outputs now analyze their state and print the next recommended command (e.g. suggesting escalating from `-Signature` to `-Body` or jumping to a larger budget on truncation) under the `Next:` provenance field or guidance footer.
-
 ## Design Constraints
 
-- **Windows PowerShell compatible**
+- **Windows PowerShell / PowerShell 7 cross-platform compatible**
 - **No external dependencies**
 - **Modularized helpers** (`scripts/powershell/lib/ACE.Parser.ps1`, `ACE.Formatting.ps1`, `ACE.Truncation.ps1`)
 - **UTF-8 output** for generated files
