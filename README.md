@@ -40,8 +40,8 @@ Read the full [methodology](docs/methodology.md) for the principles and fallback
 
 ## Benchmark
 
-[![Agent Context Economy benchmark showing reductions in terminal output, source reading, and shell commands](benchmark-results/benchmark.svg)](benchmark-results/benchmark.svg)
-[![Agent Context Economy Scenario token savings by scenario](benchmark-results/scenarios.svg)](benchmark-results/scenarios.svg)
+[![Agent Context Economy benchmark showing reductions in terminal output, source reading, and shell commands](benchmark-results/benchmark.svg?v=0.2.6)](benchmark-results/benchmark.svg?v=0.2.6)
+[![Agent Context Economy Scenario token savings by scenario](benchmark-results/scenarios.svg?v=0.2.6)](benchmark-results/scenarios.svg?v=0.2.6)
 
 | Metric | Conventional workflow | ACE workflow | Reduction |
 | :--- | :---: | :---: | :---: |
