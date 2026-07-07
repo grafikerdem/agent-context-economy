@@ -199,7 +199,7 @@ for ($idx = 0; $idx -lt $scenarios.Count; $idx++) {
     
     $chartRows += [pscustomobject]@{
         Label = $s.Name
-        Detail = "$($s.OldTokens) -> $($s.NewTokens) tokens (Lines: $($s.OldLines) -> $($s.NewLines))"
+        Detail = "$($s.OldTokens) -> $($s.NewTokens) tokens"
         Reduction = $reductionTokens
         Color = $svgColors[$idx]
         Y = $y

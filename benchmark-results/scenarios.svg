@@ -9,17 +9,17 @@
     <text x="32" y="80" fill="#8b949e" font-size="11">Generated 2026-07-07 UTC - higher is better</text>
     <line x1="32" y1="96" x2="588" y2="96" stroke="#30363d"/>
     <text x="32" y="138" fill="#c9d1d9" font-size="13" font-weight="600">Symbol Inspection</text>
-    <text x="32" y="171" fill="#8b949e" font-size="11">1078 -&gt; 384 tokens (Lines: 185 -&gt; 40)</text>
+    <text x="32" y="171" fill="#8b949e" font-size="11">1078 -&gt; 384 tokens</text>
     <rect x="200" y="146" width="338" height="22" rx="6" fill="#21262d"/>
     <rect x="200" y="146" width="216" height="22" rx="6" fill="#3fb950"/>
     <text x="548" y="162" fill="#3fb950" font-size="14" font-weight="700">64.4%</text>
     <text x="32" y="210" fill="#c9d1d9" font-size="13" font-weight="600">React Component</text>
-    <text x="32" y="243" fill="#8b949e" font-size="11">3356 -&gt; 219 tokens (Lines: 336 -&gt; 32)</text>
+    <text x="32" y="243" fill="#8b949e" font-size="11">3356 -&gt; 219 tokens</text>
     <rect x="200" y="218" width="338" height="22" rx="6" fill="#21262d"/>
     <rect x="200" y="218" width="318" height="22" rx="6" fill="#58a6ff"/>
     <text x="548" y="234" fill="#58a6ff" font-size="14" font-weight="700">93.5%</text>
     <text x="32" y="282" fill="#c9d1d9" font-size="13" font-weight="600">Large PHP Class</text>
-    <text x="32" y="315" fill="#8b949e" font-size="11">8586 -&gt; 246 tokens (Lines: 887 -&gt; 40)</text>
+    <text x="32" y="315" fill="#8b949e" font-size="11">8586 -&gt; 246 tokens</text>
     <rect x="200" y="290" width="338" height="22" rx="6" fill="#21262d"/>
     <rect x="200" y="290" width="328" height="22" rx="6" fill="#d2a8ff"/>
     <text x="548" y="306" fill="#d2a8ff" font-size="14" font-weight="700">97.1%</text>
