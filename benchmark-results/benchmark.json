@@ -1,7 +1,7 @@
 ﻿{
-    "generated_at":  "2026-07-03T22:59:23Z",
+    "generated_at":  "2026-07-07T23:16:54Z",
     "terminal_reduction":  91,
-    "source_reduction":  87,
+    "source_reduction":  92,
     "command_reduction":  71,
     "rows":  [
                  {
@@ -13,8 +13,8 @@
                  {
                      "metric":  "Source file read",
                      "vanilla":  "509 lines",
-                     "agent":  "64 lines",
-                     "reduction":  "87%"
+                     "agent":  "40 lines",
+                     "reduction":  "92%"
                  },
                  {
                      "metric":  "Shell commands",

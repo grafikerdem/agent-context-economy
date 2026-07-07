@@ -13,6 +13,19 @@ param(
 $OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Continue"
 
+function Normalize-ListParam {
+    param([string[]]$Values)
+    $items = @()
+    foreach ($value in @($Values)) {
+        if ($null -eq $value) { continue }
+        foreach ($part in ($value -split ',')) {
+            $trimmed = $part.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) { $items += $trimmed }
+        }
+    }
+    return @($items)
+}
+
 function Normalize-PathForDisplay {
     param([string]$Path)
     if (-not $Path) { return "" }
@@ -40,6 +53,14 @@ function Add-Match {
     if ($Store[$display].Matches.Count -lt $MaxMatchesPerFile) {
         $Store[$display].Matches += @{ Line = $Line; Text = $Text.Trim(); Pattern = $Pattern }
     }
+}
+
+function Add-PathMatch {
+    param([hashtable]$Store,[string]$File,[string]$Pattern)
+    $display = Normalize-PathForDisplay $File
+    if (-not $Store.ContainsKey($display)) { $Store[$display] = @{ Patterns = @{} } }
+    if (-not $Store[$display].Patterns.ContainsKey($Pattern)) { $Store[$display].Patterns[$Pattern] = 0 }
+    $Store[$display].Patterns[$Pattern]++
 }
 
 function Get-SymbolFromLine {
@@ -115,13 +136,20 @@ function Write-InvestigationProvenance {
     Write-Host "Git: $($provenance.Git)"
     Write-Host "Tool: investigate.ps1"
     Write-Host "Scope: patterns=$($Patterns -join ', '); paths=$($Paths -join ', '); mode=$mode"
+    Write-Host "Parsed patterns: $($Patterns -join ', ')"
+    Write-Host "Parsed paths: $($Paths -join ', ')"
+    Write-Host "Mode: $mode"
+    Write-Host "Case-insensitive enabled: true"
     Write-Host "Excluded: vendor, node_modules, storage, caches, .git, build outputs, min/maps"
-    Write-Host "Considered: $($store.Count) matched files; $totalMatches sampled occurrences"
+    Write-Host "Considered: $filesConsideredCount files considered; $($store.Count) content-matched files; $($pathStore.Count) path-matched files; $totalMatches sampled occurrences"
     Write-Host "Returned: $ReturnedFiles files; $ReturnedMatches preview matches; $commandCount commands"
     Write-Host "Reduction: limits files=$MaxFiles/per-file=$MaxMatchesPerFile/total=$MaxTotalMatches; compacted=$($reduced.ToString().ToLower())"
     Write-Host "Selection: ranked by occurrence count and useful non-import matches"
     Write-Host "Next: $next"
 }
+
+$Patterns = Normalize-ListParam -Values $Patterns
+$Paths = Normalize-ListParam -Values $Paths
 
 Write-Host ""
 Write-Host "=== AI INVESTIGATION SUMMARY ==="
@@ -132,9 +160,27 @@ Write-Host "Max matches per file: $MaxMatchesPerFile"
 Write-Host ""
 
 $store = @{}
+$pathStore = @{}
 $totalMatches = 0
+$filesConsidered = @{}
 $hasRipgrep = Get-Command rg -ErrorAction SilentlyContinue
 $mode = if ($hasRipgrep) { "ripgrep fixed-strings" } else { "Select-String fallback" }
+$caseInsensitiveEnabled = $true
+
+foreach ($path in $Paths) {
+    if (-not (Test-Path -LiteralPath $path)) { continue }
+    $candidateFiles = Get-ChildItem -LiteralPath $path -Recurse -File -ErrorAction SilentlyContinue | Where-Object { -not (Is-ExcludedPath $_.FullName) }
+    foreach ($file in $candidateFiles) {
+        $display = Normalize-PathForDisplay $file.FullName
+        $filesConsidered[$display] = $true
+        foreach ($pattern in $Patterns) {
+            if ($display.IndexOf($pattern, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+                Add-PathMatch -Store $pathStore -File $file.FullName -Pattern $pattern
+            }
+        }
+    }
+}
+$filesConsideredCount = $filesConsidered.Count
 
 foreach ($pattern in $Patterns) {
     foreach ($path in $Paths) {
@@ -154,21 +200,23 @@ foreach ($pattern in $Patterns) {
                 --glob '!*.min.js' `
                 --glob '!*.map' `
                 --fixed-strings `
+                --ignore-case `
                 -- $pattern $path 2>$null
 
             foreach ($line in $raw) {
                 if ($totalMatches -ge $MaxTotalMatches) { break }
-                $parts = $line -split ":", 3
-                if ($parts.Count -lt 3) { continue }
+                $parsed = [regex]::Match($line, '^(.*):(\d+):(.*)$')
+                if (-not $parsed.Success) { continue }
                 $lineNumber = 0
-                [void][int]::TryParse($parts[1], [ref]$lineNumber)
-                Add-Match -Store $store -File $parts[0] -Line $lineNumber -Text $parts[2] -Pattern $pattern
+                [void][int]::TryParse($parsed.Groups[2].Value, [ref]$lineNumber)
+                Add-Match -Store $store -File $parsed.Groups[1].Value -Line $lineNumber -Text $parsed.Groups[3].Value -Pattern $pattern
                 $totalMatches++
             }
         } else {
             $files = Get-ChildItem -LiteralPath $path -Recurse -File -ErrorAction SilentlyContinue | Where-Object { -not (Is-ExcludedPath $_.FullName) }
             foreach ($file in $files) {
                 if ($totalMatches -ge $MaxTotalMatches) { break }
+                # Select-String is case-insensitive by default unless -CaseSensitive is supplied.
                 $matches = Select-String -LiteralPath $file.FullName -Pattern $pattern -SimpleMatch -ErrorAction SilentlyContinue
                 foreach ($match in $matches) {
                     if ($totalMatches -ge $MaxTotalMatches) { break }
@@ -183,6 +231,7 @@ foreach ($pattern in $Patterns) {
 $files = @($store.GetEnumerator() | Sort-Object { $_.Value.Count } -Descending | Select-Object -First $MaxFiles)
 
 Write-Host "Mode: $mode"
+Write-Host "Case-insensitive: $($caseInsensitiveEnabled.ToString().ToLower())"
 Write-Host "Files matched: $($store.Count)"
 Write-Host "Occurrences sampled: $totalMatches"
 if ($totalMatches -ge $MaxTotalMatches) { Write-Host "Sampling stopped at MaxTotalMatches=$MaxTotalMatches. Narrow patterns or paths if needed." -ForegroundColor Yellow }
@@ -191,9 +240,18 @@ Write-Host ""
 Write-Host "=== TOP MATCHED FILES ==="
 if (-not $files -or $files.Count -eq 0) {
     Write-Host "No matches."
+    $pathFiles = @($pathStore.GetEnumerator() | Sort-Object { $_.Name } | Select-Object -First $MaxFiles)
+    if ($pathFiles.Count -gt 0) {
+        Write-Host ""
+        Write-Host "=== PATH MATCHES ==="
+        foreach ($entry in $pathFiles) {
+            $patternSummary = ($entry.Value.Patterns.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ", "
+            "{0}  [{1}]" -f $entry.Key, $patternSummary
+        }
+    }
     Write-Host ""
     Write-Host "=== GUIDANCE ==="
-    Write-Host "Try fewer/broader patterns, or verify the affected domain from docs/context first."
+    Write-Host "Try broader domain terms or path matches, or verify the affected domain from docs/context first."
     Write-InvestigationProvenance -ReturnedFiles 0 -ReturnedMatches 0 -Commands @()
     exit 0
 }
@@ -209,6 +267,16 @@ foreach ($entry in $files) {
     Write-Host ""
     Write-Host $entry.Key -ForegroundColor Cyan
     foreach ($match in $entry.Value.Matches) { "  {0,5}: {1}" -f $match.Line, $match.Text }
+}
+
+$pathFiles = @($pathStore.GetEnumerator() | Where-Object { -not $store.ContainsKey($_.Name) } | Sort-Object { $_.Name } | Select-Object -First $MaxFiles)
+if ($pathFiles.Count -gt 0) {
+    Write-Host ""
+    Write-Host "=== PATH MATCHES ==="
+    foreach ($entry in $pathFiles) {
+        $patternSummary = ($entry.Value.Patterns.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ", "
+        "{0}  [{1}]" -f $entry.Key, $patternSummary
+    }
 }
 
 Write-Host ""
