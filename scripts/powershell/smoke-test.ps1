@@ -47,7 +47,9 @@ Section "AI Script Smoke Test"
 Write-Host "Repository: $(Get-Location)"
 Write-Host "Max preview lines per command: $MaxPreviewLines"
 
-Get-ChildItem $PSScriptRoot -Filter *.ps1 -ErrorAction SilentlyContinue | Unblock-File
+if (Get-Command Unblock-File -ErrorAction SilentlyContinue) {
+    Get-ChildItem $PSScriptRoot -Filter *.ps1 -ErrorAction SilentlyContinue | Unblock-File
+}
 
 $tempDir = Join-Path (Get-Location) ".agent-context-economy-smoke"
 New-Item -ItemType Directory -Force -Path $tempDir | Out-Null

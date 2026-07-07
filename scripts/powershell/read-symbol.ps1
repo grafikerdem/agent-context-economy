@@ -26,9 +26,9 @@ param(
 $OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
 
-. (Join-Path $PSScriptRoot "lib\ACE.Parser.ps1")
-. (Join-Path $PSScriptRoot "lib\ACE.Formatting.ps1")
-. (Join-Path $PSScriptRoot "lib\ACE.Truncation.ps1")
+. (Join-Path $PSScriptRoot "lib/ACE.Parser.ps1")
+. (Join-Path $PSScriptRoot "lib/ACE.Formatting.ps1")
+. (Join-Path $PSScriptRoot "lib/ACE.Truncation.ps1")
 
 # Resolve Context Budget
 $budgetLimits = Resolve-ACEBudget -Budget $Budget -DefaultMaxLines 80 -DefaultMaxBlockLines 60

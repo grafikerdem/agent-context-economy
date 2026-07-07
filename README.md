@@ -80,6 +80,8 @@ Scripts inspect the repository read-only except for generated data under `.agent
 
 From the repository where ACE is installed:
 
+### Windows (PowerShell)
+
 ```powershell
 # Setup environment and run smoke tests
 .\scripts\powershell\setup-ai-scripts.ps1
@@ -95,6 +97,38 @@ From the repository where ACE is installed:
 
 # Progressive Reading: Read a symbol signature with a small token budget (~400 tokens)
 .\scripts\powershell\read-symbol.ps1 -Path .\scripts\powershell\read-symbol.ps1 -Symbol "Fail" -Signature -Budget Small
+```
+
+### macOS / Linux (Bash Wrapper)
+
+Ensure PowerShell 7 (`pwsh`) is installed:
+```bash
+# macOS (using Homebrew)
+brew install --cask powershell
+
+# Linux (Ubuntu/Debian)
+sudo apt-get update && sudo apt-get install -y powershell
+```
+
+Then execute via the thin executable wrappers:
+```bash
+# Setup environment and run smoke tests
+pwsh ./scripts/powershell/setup-ai-scripts.ps1
+pwsh ./scripts/powershell/smoke-test.ps1
+
+# Establish repository overview
+pwsh ./scripts/powershell/repo-map.ps1
+pwsh ./scripts/powershell/session-state.ps1 set-task -Value "Refactor auth controller"
+pwsh ./scripts/powershell/agent-start.ps1
+
+# Progressive Reading: Summarize/Outline a code file via wrapper
+./bin/ace-read-text -Path ./scripts/powershell/setup-ai-scripts.ps1
+
+# Progressive Reading: Read a symbol signature via wrapper
+./bin/ace-read-symbol -Path ./scripts/powershell/read-symbol.ps1 -Symbol "Fail" -Signature -Budget Small
+
+# Search patterns via wrapper
+./bin/ace-search -Pattern "Fail" -Path .
 ```
 
 Copy the relevant policies from [examples/AGENTS.example.md](examples/AGENTS.example.md) into your project-level `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, or equivalent instruction file.
